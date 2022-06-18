@@ -1,0 +1,33 @@
+Resources:
+  WAFWebACL:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: "Maintenance-WebACL"
+      Scope: "CLOUDFRONT"
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: "WAFWebACLMentenance"
+        SampledRequestsEnabled: true
+      CustomResponseBodies: 
+        CustomResponseBodyKeyForCloudfront:
+          ContentType: TEXT_HTML
+          Content: |
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>メンテナンス中</title>
+              <meta http-equiv="content-type" charset="utf-8">
+            </head>
+            <body>
+              <h1>メンテナンス中</h1>
+              <p>メンテナンスが終わるまでお待ちください</p>
+            </body>
+            </html>
+      DefaultAction:
+        Block: 
+          CustomResponse:
+            ResponseCode: 503
+            CustomResponseBodyKey: CustomResponseBodyKeyForCloudfront
+            ResponseHeaders:
+              - Name: custom-error-type
+                Value: "MaintenanceMode"
